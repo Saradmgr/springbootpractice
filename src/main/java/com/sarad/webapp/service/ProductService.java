@@ -1,6 +1,8 @@
 package com.sarad.webapp.service;
 
 import com.sarad.webapp.model.Product;
+import com.sarad.webapp.repository.ProductRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,44 +14,31 @@ import java.util.List;
 @Service
 public class ProductService {
 
-        List<Product> products =new ArrayList<>( Arrays.asList(
-                new Product(1, "Dell", 2222),
-                new Product(2, "Acer", 2123456),
-                new Product(3, "Lenevo", 2222512)
-        ));
+        @Autowired
+        ProductRepo repo;
+//        List<Product> products =new ArrayList<>( Arrays.asList(
+//                new Product(1, "Dell", 2222),
+//                new Product(2, "Acer", 2123456),
+//                new Product(3, "Lenevo", 2222512)
+//        ));
 
     public List<Product> getProduct(){
-        return products;
+        return repo.findAll();
     }
 
     public Product getProductsById(int prodId) {
-        return products.stream()
-                .filter(p-> p.getProdId()==prodId)
-                .findFirst().get();
+        return repo.findById(prodId).orElse(new Product(0, "", 0));
     }
 
     public void postProducts(Product product) {
-        products.add(product);
+        repo.save(product);
     }
 
     public void updateProduct(Product product) {
-        int ind=0;
-        for (int i=0;i<products.size();i++){
-            if(products.get(i).getProdId() == product.getProdId()){
-                ind=i;
-            }
-
-        }
-        products.set(ind,product);
+        repo.save(product);
     }
 
     public void deleteProducts(int prodId) {
-        int ind=0;
-        for (int i=0;i<products.size();i++) {
-            if (products.get(i).getProdId() == prodId) {
-                ind = i;
-            }
-        }
-        products.remove(ind);
+        repo.deleteById(prodId);
     }
 }
